@@ -1,11 +1,12 @@
 package me.shellbell.mlkitandroid
 
 import android.app.ActionBar
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.support.v7.widget.AppCompatTextView
-import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.FirebaseVision
@@ -15,18 +16,28 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.activity_base_camera.*
 import kotlinx.android.synthetic.main.layout_barcode.*
 
-
 class BarcodeActivity : BaseCameraActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBottomSheet(R.layout.layout_barcode)
         makeAppbarTitleCenter()
+        setLongPressToCopy()
     }
 
     private fun makeAppbarTitleCenter() {
         supportActionBar?.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar?.setCustomView(R.layout.custom_appbar)
+    }
+
+    private fun setLongPressToCopy() {
+        codeData.setOnLongClickListener { textView ->
+            val clipboardManager = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText("text", codeData.text)
+            clipboardManager.primaryClip = clipData
+            Toast.makeText(baseContext, "Barcode copied in ClipBoard", Toast.LENGTH_SHORT).show()
+            true
+        }
     }
 
     override fun onClick(v: View) {
